@@ -39,7 +39,6 @@
           },
           "configurations": {
             "production": {
-              "outputPath": "dist/prod",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -58,7 +57,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
+                  "maximumWarning": "3mb",
                   "maximumError": "5mb"
                 }
               ]
@@ -68,18 +67,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "babylon-wp:build"
+            "browserTarget": "webTest:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "babylon-wp:build:production"
+              "browserTarget": "webTest:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "babylon-wp:build"
+            "browserTarget": "webTest:build"
           }
         },
         "test": {
@@ -113,7 +112,7 @@
         }
       }
     },
-    "babylon-wp-e2e": {
+    "webTest-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -122,7 +121,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "babylon-wp:serve"
+            "devServerTarget": "webTest:serve"
           },
           "configurations": {
             "production": {
