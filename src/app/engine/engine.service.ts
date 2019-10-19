@@ -14,6 +14,7 @@ export class EngineService {
   private light: BABYLON.Light;
 
   private sphere: BABYLON.Mesh;
+  private earth: BABYLON.Mesh;
   private thing: BABYLON.AbstractMesh;
 
   public constructor(private ngZone: NgZone) {}
@@ -43,14 +44,21 @@ export class EngineService {
 
     // create a built-in "sphere" shape; its constructor takes 4 params: name, subdivisions, radius, scene
     this.sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, this.scene);
-
+    this.earth = BABYLON.MeshBuilder.CreateSphere('earth', {diameter: 1});
+    
+    const earthMaterial = new BABYLON.StandardMaterial('earth_surface', this.scene);
+    earthMaterial.diffuseTexture = new BABYLON.Texture('assets/textures/earth.jpg', this.scene);
+    this.earth.material = earthMaterial;
     // create the material with its texture for the sphere and assign it to the sphere
     const spherMaterial = new BABYLON.StandardMaterial('sun_surface', this.scene);
     spherMaterial.diffuseTexture = new BABYLON.Texture('assets/textures/sun.jpg', this.scene);
     this.sphere.material = spherMaterial;
 
     // move the sphere upward 1/2 of its height
-    this.sphere.position.y = 5;
+    this.sphere.position.y = 2;
+    this.earth.position.y = 2;
+    this.earth.position.x = 3;
+    this.earth.position.z = -1;
 
     // simple rotation along the y axis
     this.scene.registerAfterRender(() => {
@@ -66,8 +74,6 @@ export class EngineService {
       
       this.clicky(pickResult);
 
-      //this.sphere.position.x = this.scene.pointerX;
-      //this.sphere.position.y = this.scene.pointerY;
 
     })
 
