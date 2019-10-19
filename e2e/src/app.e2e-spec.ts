@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('babylon-wp App', () => {
+describe('webTest App', () => {
   let page: AppPage;
 
   beforeEach(() => {
