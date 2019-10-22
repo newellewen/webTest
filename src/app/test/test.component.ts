@@ -10,7 +10,7 @@ import { Button } from './model/button';
 })
 export class TestComponent implements OnInit {
 
-  private buttons: Button[] = []
+  public buttons: Button[] = []
 
   constructor(private engineService: EngineService) { }
 
