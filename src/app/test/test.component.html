@@ -1,5 +1,5 @@
 
 <div class="test">
-    <p>test works!</p>
+    <button *ngFor="let button of buttons" (click)="clickedMe(button.id)">{{button.name}}</button>
 </div>
 
