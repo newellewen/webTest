@@ -4,4 +4,5 @@ export interface Planet {
   diameter: number;
   distance: number;
   axis: number;
+  revSpeed: number;
 }
