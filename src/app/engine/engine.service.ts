@@ -87,7 +87,7 @@ export class EngineService {
     this.spaceBox = MeshBuilder.CreateBox("spaceBox", {size: 50000}, this.scene);
     var spaceBoxMaterial = new BABYLON.StandardMaterial("spaceMaterial", this.scene);
     spaceBoxMaterial.backFaceCulling = false;
-    spaceBoxMaterial.reflectionTexture = new BABYLON.CubeTexture('assets/textures/spacebox/', this.scene);
+    spaceBoxMaterial.reflectionTexture = new BABYLON.CubeTexture('assets/textures/spacebox', this.scene);
     spaceBoxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     spaceBoxMaterial.disableLighting = true;
     this.spaceBox.infiniteDistance = true;
