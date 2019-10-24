@@ -19,12 +19,19 @@ export class TestComponent implements OnInit {
       {id: 0, name: 'sol' },
       {id: 1, name: 'mercury'},
       {id: 2, name: 'venus'},
-      {id: 3, name: 'earth'}
+      {id: 3, name: 'earth'},
+      {id: 99, name: 'return'}
     ];
   }
 
   clickedMe(id: number): void {
-    this.engineService.moveCameraToPlanet(id);
+    if (id===99) {
+      this.engineService.returnFreeCamera();
+    }
+    else {
+      this.engineService.followPlanet(id);
+    }
+    
   }
 
 }

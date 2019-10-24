@@ -13,9 +13,11 @@ export class EngineService {
   private canvas: HTMLCanvasElement;
   private engine: BABYLON.Engine;
   private camera: BABYLON.FreeCamera;
+  private followCamera: BABYLON.FollowCamera;
   private scene: BABYLON.Scene;
   private light: BABYLON.Light;
 
+  private spaceBox: BABYLON.Mesh;
   private bodies: Planet[];
 
   private meshBodies: BABYLON.Mesh[] = [];
@@ -38,11 +40,16 @@ export class EngineService {
 
     // create a basic light, aiming 0,1,0 - meaning, to the sky
     this.light = new BABYLON.HemisphericLight('sunlight', new BABYLON.Vector3(0, 1, 0), this.scene);    
-
+    
+    this.generateSpaceBox();
     this.generatePlanets();
 
-    this.scene.registerBeforeRender(() => {
-      
+    this.scene.registerBeforeRender(() => {      
+      for(let body of this.bodies)
+      {
+        this.meshBodies[body.id].rotate(new BABYLON.Vector3(Math.sin(body.axis * Math.PI/180), Math.cos(body.axis * Math.PI/180), 0), -0.01, BABYLON.Space.WORLD)
+        this.meshBodies[body.id].position = new BABYLON.Vector3((body.distance/10) * Math.sin(body.revSpeed), 0, (body.distance/10) * Math.cos(body.revSpeed));
+      }
 
     });
     window.addEventListener('click', () => {
@@ -65,13 +72,7 @@ export class EngineService {
     this.ngZone.runOutsideAngular(() => {
       window.addEventListener('DOMContentLoaded', () => {
         this.engine.runRenderLoop(() => {
-          this.scene.render();
-          for(let body of this.bodies)
-          {
-            this.meshBodies[body.id].rotate(new BABYLON.Vector3(Math.sin(body.axis * Math.PI/180), Math.cos(body.axis * Math.PI/180), 0), -0.01, BABYLON.Space.WORLD)
-            this.meshBodies[body.id].position = new BABYLON.Vector3((body.distance/10) * Math.sin(body.revSpeed), 0, (body.distance/10) * Math.cos(body.revSpeed));
-          }
-    
+          this.scene.render();    
         });
       });
 
@@ -80,6 +81,19 @@ export class EngineService {
       });
 
     });
+  }
+
+  generateSpaceBox(): void {
+    this.spaceBox = MeshBuilder.CreateBox("spaceBox", {size: 50000}, this.scene);
+    var spaceBoxMaterial = new BABYLON.StandardMaterial("spaceMaterial", this.scene);
+    spaceBoxMaterial.backFaceCulling = false;
+    spaceBoxMaterial.reflectionTexture = new BABYLON.CubeTexture('assets/textures/spacebox/', this.scene);
+    spaceBoxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    spaceBoxMaterial.disableLighting = true;
+    this.spaceBox.infiniteDistance = true;
+    this.spaceBox.material = spaceBoxMaterial;   
+    this.spaceBox.renderingGroupId = 0; 
+    
   }
 
   generatePlanets(): void {
@@ -102,6 +116,7 @@ export class EngineService {
       if (body.id > 0) {
         this.meshBodies[body.id].parent = this.meshBodies[0];
       }       
+      this.meshBodies[body.id].renderingGroupId = 1;
     }
     this.camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(5, 10, -20), this.scene);
     this.moveCameraToPlanet(0);
@@ -111,12 +126,32 @@ export class EngineService {
 
   moveCameraToPlanet(id: number) {    
     this.camera.position.y = this.meshBodies[id].position.y + (this.bodies[id].diameter * 10);
-    console.log(this.bodies[id].name);
     this.camera.position.x = this.meshBodies[id].position.x - (this.bodies[id].diameter * 20);
     this.camera.position.z = this.meshBodies[id].position.z - (this.bodies[id].diameter * 20);
     this.camera.setTarget(this.meshBodies[id].position);    
   }
  
+  followPlanet(id: number) {
+    this.followCamera = new BABYLON.FollowCamera("followCamera", new BABYLON.Vector3(0, 0, 0), this.scene);
+    this.followCamera.radius = this.bodies[id].diameter * 2;
+    this.followCamera.heightOffset = this.bodies[id].diameter;
+    this.followCamera.rotationOffset = 0;
+    this.followCamera.cameraAcceleration = 0.05;
+    this.followCamera.maxCameraSpeed = 50000;    
+    this.followCamera.lockedTarget = this.meshBodies[id];
+    this.camera.detachControl(this.canvas);    
+    this.scene.activeCamera = this.followCamera;    
+    this.followCamera.attachControl(this.canvas, true);   
+    this.generateSpaceBox();
+  }
+
+  returnFreeCamera(): void {
+    this.followCamera.detachControl(this.canvas);
+    this.scene.activeCamera =this.camera;
+    this.camera.attachControl(this.canvas);
+    //this.camera.setTarget(this.meshBodies[0].position);
+  }
+
   /**
    * creates the world axes
    *
